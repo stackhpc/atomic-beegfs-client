@@ -8,8 +8,3 @@ docker build --build-arg BEEGFS_VERSION=${BEEGFS_VERSION} \
 docker run --name beegfs-client -e "BEEGFS_VERSION=${BEEGFS_VERSION}" \
      -e "BEEGFS_KERNEL_VERSION=${BEEGFS_KERNEL_VERSION}" --rm --privileged \
      brtknr/beegfs-client:${BEEGFS_VERSION} modprobe beegfs
-
-docker run --name beegfs-client -e "BEEGFS_VERSION=${BEEGFS_VERSION}" \
-     -e "BEEGFS_KERNEL_VERSION=${BEEGFS_KERNEL_VERSION}" --rm --privileged \
-     brtknr/beegfs-client:${BEEGFS_VERSION} \
-     insmod /usr/lib/modules/${BEEGFS_KERNEL_VERSION}/extra/beegfs.ko

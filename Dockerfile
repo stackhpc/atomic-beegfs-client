@@ -1,4 +1,4 @@
-FROM fedora as builder
+FROM fedora
 MAINTAINER "Bharat Kunwar" <bharat@stackhpc.com>
 
 ARG BEEGFS_VERSION
@@ -26,25 +26,3 @@ RUN dnf install -y \
         dnf clean all && rm -f /tmp/*.rpm
 
 RUN /etc/init.d/beegfs-client rebuild
-
-FROM fedora
-MAINTAINER "Bharat Kunwar" <bharat@stackhpc.com>
-
-ARG BEEGFS_KERNEL_VERSION
-
-WORKDIR /tmp
-
-RUN dnf update -y && dnf install kmod koji -y && \
-        koji download-build --rpm --arch=x86_64 kernel-core-${BEEGFS_KERNEL_VERSION} && \
-        koji download-build --rpm --arch=x86_64 kernel-modules-${BEEGFS_KERNEL_VERSION} && \
-        dnf install -y /tmp/kernel-core-${BEEGFS_KERNEL_VERSION}.rpm \
-        kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm && \
-        dnf clean all && rm -f /tmp/*.rpm
-
-COPY --from=builder /usr/lib/modules/${BEEGFS_KERNEL_VERSION}/extra/wireguard.ko \
-                    /usr/lib/modules/${BEEGFS_KERNEL_VERSION}/extra/wireguard.ko
-
-COPY --from=builder /usr/bin/wg /usr/bin/wg
-COPY --from=builder /usr/bin/wg-quick /usr/bin/wg-quick
-
-CMD /usr/bin/wg
