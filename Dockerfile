@@ -20,14 +20,12 @@ RUN dnf install -y \
         koji download-build --rpm --arch=x86_64 kernel-core-${BEEGFS_KERNEL_VERSION} && \
         koji download-build --rpm --arch=x86_64 kernel-devel-${BEEGFS_KERNEL_VERSION} && \
         koji download-build --rpm --arch=x86_64 kernel-modules-${BEEGFS_KERNEL_VERSION} && \
-        dnf install kernel-core-${BEEGFS_KERNEL_VERSION}.rpm \
+        dnf install -y kernel-core-${BEEGFS_KERNEL_VERSION}.rpm \
         kernel-devel-${BEEGFS_KERNEL_VERSION}.rpm \
         kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm && \
-        dnf clean all
+        dnf clean all && rm -f /tmp/*.rpm
 
-WORKDIR /tmp/WireGuard-${BEEGFS_VERSION}/src
-
-RUN KERNELDIR=/usr/lib/modules/${BEEGFS_KERNEL_VERSION}/build make -j$(nproc) && make install
+RUN /etc/init.d/beegfs-client rebuild
 
 FROM fedora
 MAINTAINER "Bharat Kunwar" <bharat@stackhpc.com>
@@ -39,8 +37,8 @@ WORKDIR /tmp
 RUN dnf update -y && dnf install kmod koji -y && \
         koji download-build --rpm --arch=x86_64 kernel-core-${BEEGFS_KERNEL_VERSION} && \
         koji download-build --rpm --arch=x86_64 kernel-modules-${BEEGFS_KERNEL_VERSION} && \
-        dnf install /tmp/kernel-core-${BEEGFS_KERNEL_VERSION}.rpm \
-        kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm -y && \
+        dnf install -y /tmp/kernel-core-${BEEGFS_KERNEL_VERSION}.rpm \
+        kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm && \
         dnf clean all && rm -f /tmp/*.rpm
 
 COPY --from=builder /usr/lib/modules/${BEEGFS_KERNEL_VERSION}/extra/wireguard.ko \
