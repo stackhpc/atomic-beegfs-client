@@ -25,4 +25,6 @@ RUN dnf install -y \
         kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm && \
         dnf clean all && rm -f /tmp/*.rpm
 
-RUN /etc/init.d/beegfs-client rebuild
+COPY run.sh /tmp/run.sh
+
+RUN /tmp/run.sh
