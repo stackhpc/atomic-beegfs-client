@@ -25,6 +25,8 @@ RUN dnf install -y \
         kernel-modules-${BEEGFS_KERNEL_VERSION}.rpm && \
         dnf clean all && rm -f /tmp/*.rpm
 
+COPY setup.sh /tmp/setup.sh
 COPY run.sh /tmp/run.sh
 
-RUN /tmp/run.sh
+RUN /tmp/setup.sh
+ENTRYPOINT /tmp/run.sh
