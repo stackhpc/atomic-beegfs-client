@@ -8,7 +8,22 @@ while ! ping -c 1 -W 1 $BEEGFS_MGMTD_HOST; do
     sleep 1
 done
 
+echo "Starting BeeGFS...";
 /etc/init.d/beegfs-helperd start && /etc/init.d/beegfs-client start
-echo "Entering daemon mode... (press Ctrl+C)" && sleep infinity
-umount /mnt/beegfs && /etc/init.d/beegfs-client stop /etc/init.d/beegfs-helperd stop
-echo "Beegfs has stopped... (press Ctrl+C)" && sleep infinity
+
+_term() { 
+  echo "Caught SIGTERM signal!" 
+  umount /mnt/beegfs
+  /etc/init.d/beegfs-client stop && /etc/init.d/beegfs-helperd stop
+  kill -TERM "$child" 2>/dev/null
+  echo "BeeGFS has stopped..."
+  exit 0
+}
+
+trap _term SIGTERM SIGINT
+
+echo "Entering daemon mode... (press Ctrl+C to exit.)" && sleep infinity &
+
+child=$! 
+wait "$child"
+

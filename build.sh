@@ -12,5 +12,5 @@ docker push brtknr/beegfs-client:${BEEGFS_VERSION}
 
 docker run --name beegfs-client -it \
      -e "BEEGFS_MGMTD_HOST=${BEEGFS_MGMTD_HOST}" --rm --privileged \
-     --network=host -v /mnt/beegfs:/mnt/beegfs \
+     --network=host --mount type=bind,src=/mnt/beegfs,target=/mnt/beegfs \
      brtknr/beegfs-client:${BEEGFS_VERSION}
