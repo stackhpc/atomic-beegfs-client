@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: beegfs
+    tier: monitor
+  name: beegfs
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      name: beegfs
+  template:
+    metadata:
+      labels:
+        name: beegfs
+      name: beegfs-pod
+    spec:
+      containers:
+      - image: docker.io/brtknr/beegfs-client:7
+        imagePullPolicy: IfNotPresent
+        name: beegfs-test
+        resources: {}
+        volumeMounts:
+        - mountPath: /data
+          name: beegfs-pv-volume
+      hostNetwork: true
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: beegfs-pv-volume
+        persistentVolumeClaim:
+          claimName: beegfs-pv-claim
