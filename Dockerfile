@@ -7,11 +7,9 @@ ARG BEEGFS_KERNEL_VERSION
 WORKDIR /tmp
 
 RUN curl -L -o /etc/yum.repos.d/beegfs-rhel7.repo \
-  http://www.beegfs.com/release/beegfs_${BEEGFS_VERSION}/dists/beegfs-rhel7.repo
-RUN dnf update -y && dnf install -y \
-        beegfs-client beegfs-helperd beegfs-utils
- 
-RUN dnf install -y \
+    http://www.beegfs.com/release/beegfs_${BEEGFS_VERSION}/dists/beegfs-rhel7.repo && \
+    dnf update -y && dnf install -y \
+        beegfs-client beegfs-helperd beegfs-utils \
         libmnl-devel elfutils-libelf-devel findutils binutils boost-atomic boost-chrono \
         boost-date-time boost-system boost-thread cpp dyninst efivar-libs gc \
         gcc glibc-devel glibc-headers guile koji isl libatomic_ops libdwarf libmpc \
@@ -26,7 +24,7 @@ RUN dnf install -y \
         dnf clean all && rm -f /tmp/*.rpm
 
 COPY setup.sh /tmp/setup.sh
-COPY run.sh /tmp/run.sh
-
 RUN /tmp/setup.sh
+
+COPY run.sh /tmp/run.sh
 ENTRYPOINT /tmp/run.sh
