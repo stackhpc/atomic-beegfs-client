@@ -20,15 +20,16 @@ spec:
       - image: docker.io/brtknr/beegfs-client:7
         imagePullPolicy: IfNotPresent
         name: beegfs-test
-        resources: {}
+        env:
+        - name: BEEGFS_MGMTD_HOST
+          value: 10.60.253.20
         volumeMounts:
-        - mountPath: /data
+        - mountPath: /mnt/beegfs
           name: beegfs-pv-volume
+          mountPropagation: Bidirectional
+        securityContext:
+          privileged: true
       hostNetwork: true
-      restartPolicy: OnFailure
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
       volumes:
       - name: beegfs-pv-volume
         persistentVolumeClaim:
