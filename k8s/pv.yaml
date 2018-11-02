@@ -1,7 +1,7 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: beegfs-pv-volume
+  name: beegfs-pv
   labels:
     type: local
 spec:
@@ -11,4 +11,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/beegfs"
+    path: "/mnt/beegfs/"

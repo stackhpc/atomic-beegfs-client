@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: beegfs-pv-claim
+  name: beegfs-pvc
 spec:
   storageClassName: manual
   accessModes:

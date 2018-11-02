@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
-    app: beegfs
+    app: beegfs-ds
     tier: monitor
-  name: beegfs
+  name: beegfs-ds
   namespace: default
 spec:
   selector:
     matchLabels:
-      name: beegfs
+      name: beegfs-ds
   template:
     metadata:
       labels:
-        name: beegfs
+        name: beegfs-ds
       name: beegfs-pod
     spec:
       containers:
@@ -25,12 +25,12 @@ spec:
           value: 10.60.253.20
         volumeMounts:
         - mountPath: /mnt/beegfs
-          name: beegfs-pv-volume
+          name: beegfs-pv
           mountPropagation: Bidirectional
         securityContext:
           privileged: true
       hostNetwork: true
       volumes:
-      - name: beegfs-pv-volume
+      - name: beegfs-pv
         persistentVolumeClaim:
-          claimName: beegfs-pv-claim
+          claimName: beegfs-pvc
