@@ -25,12 +25,12 @@ spec:
           value: 10.60.253.20
         volumeMounts:
         - mountPath: /mnt/beegfs
-          name: beegfs-pv
+          name: beegfs-vol
           mountPropagation: Bidirectional
         securityContext:
           privileged: true
       hostNetwork: true
       volumes:
-      - name: beegfs-pv
-        persistentVolumeClaim:
-          claimName: beegfs-pvc
+      - name: beegfs-vol
+        hostPath:
+          path: /mnt/storage-nvme

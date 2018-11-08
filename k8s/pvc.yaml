@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: beegfs-pvc
 spec:
-  storageClassName: manual
+  storageClassName: beegfs-sc
   accessModes:
     - ReadWriteOnce
   resources:
