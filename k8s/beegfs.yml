@@ -1,0 +1,70 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: beegfs-sc
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: beegfs-pv
+  labels:
+    type: local
+spec:
+  storageClassName: beegfs-sc
+  capacity:
+    storage: 12T
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/beegfs/"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: beegfs-pvc
+spec:
+  storageClassName: beegfs-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: beegfs-ds
+    tier: monitor
+  name: beegfs-ds
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      name: beegfs-ds
+  template:
+    metadata:
+      labels:
+        name: beegfs-ds
+      name: beegfs-pod
+    spec:
+      containers:
+      - image: docker.io/brtknr/beegfs-client:7_1
+        imagePullPolicy: Always
+        name: beegfs-test
+        env:
+        - name: BEEGFS_MGMTD_HOST
+          value: 10.60.253.20
+        volumeMounts:
+        - mountPath: /mnt/beegfs
+          name: beegfs-pv
+          mountPropagation: Bidirectional
+        securityContext:
+          privileged: true
+      hostNetwork: true
+      volumes:
+      - name: beegfs-pv
+        persistentVolumeClaim:
+          claimName: beegfs-pvc
