@@ -16,8 +16,12 @@ done
 
 echo "Configure helper port"
 BEEGFS_HELPER_PORT="${BEEGFS_HELPER_PORT:-8006}"
-sed -i -e 's/^connHelperdPortTCP.*$/connHelperdPortTCP = '$BEEGFS_HELPER_PORT'/' /etc/beegfs/beegfs-client.conf
-sed -i -e 's/^connHelperdPortTCP.*$/connHelperdPortTCP = '$BEEGFS_HELPER_PORT'/' /etc/beegfs/beegfs-helperd.conf
+sed -i -e 's/^connHelperdPortTCP.*$/connHelperdPortTCP = '${BEEGFS_HELPER_PORT}'/' /etc/beegfs/beegfs-client.conf
+sed -i -e 's/^connHelperdPortTCP.*$/connHelperdPortTCP = '${BEEGFS_HELPER_PORT}'/' /etc/beegfs/beegfs-helperd.conf
+
+echo "Configure client port"
+BEEGFS_CLIENT_PORT="${BEEGFS_CLIENT_PORT:-8004}"
+sed -i -e 's/^connClientPortUDP.*$/connClientPortUDP = '${BEEGFS_CLIENT_PORT}'/' /etc/beegfs/beegfs-client.conf
 
 echo "Starting BeeGFS..."
 /etc/init.d/beegfs-helperd start && /etc/init.d/beegfs-client start
