@@ -9,7 +9,7 @@ WORKDIR /tmp
 RUN curl -L -o /etc/yum.repos.d/beegfs-rhel7.repo \
       https://www.beegfs.io/release/beegfs_${BEEGFS_VERSION}/dists/beegfs_rhel7.repo && \
     dnf install -y \
-        beegfs-client beegfs-helperd beegfs-utils libbeegfs-ib \
+        beegfs-client beegfs-helperd beegfs-utils libbeegfs-ib iputils \
         libmnl-devel elfutils-libelf-devel findutils binutils boost-atomic boost-chrono \
         boost-date-time boost-system boost-thread cpp dyninst efivar-libs gc \
         gcc glibc-devel glibc-headers guile koji isl libatomic_ops libdwarf libmpc \

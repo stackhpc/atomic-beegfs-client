@@ -1,0 +1,4 @@
+#! /bin/env sh
+export BEEGFS_MGMTD_HOST=10.60.253.50 # 20=nvme 50=ssd #40=openhpc
+export BEEGFS_HELPER_PORT=8054
+export BEEGFS_MOUNT_PATH=/mnt/storage-ssd
