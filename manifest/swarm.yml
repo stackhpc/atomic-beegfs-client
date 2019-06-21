@@ -1,0 +1,25 @@
+---
+version: "3.6"
+
+networks:
+  hostnet:
+    external: true
+    name: host
+
+services:
+  beegfs-ds:
+    privileged: true
+    image: docker.io/brtknr/beegfs-client:7_1
+    networks:
+      hostnet: {}
+    deploy:
+      mode: global
+    environment:
+      - "BEEGFS_MGMTD_HOST=10.60.253.20"
+    volumes:
+      - type: bind
+        bind:
+          propagation: shared
+        source: /mnt/beegfs/
+        target: /mnt/beegfs/
+

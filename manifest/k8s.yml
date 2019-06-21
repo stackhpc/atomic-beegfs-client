@@ -33,4 +33,4 @@ spec:
       volumes:
       - name: beegfs-vol
         hostPath:
-          path: /mnt/beegfs/
+          path: /mnt/storage-nvme
