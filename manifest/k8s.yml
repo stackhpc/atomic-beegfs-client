@@ -24,7 +24,7 @@ spec:
         - name: BEEGFS_MGMTD_HOST
           value: 10.60.253.20
         volumeMounts:
-        - mountPath: /mnt/beegfs/
+        - mountPath: /mnt/beegfs
           name: beegfs-vol
           mountPropagation: Bidirectional
         securityContext:
@@ -33,4 +33,4 @@ spec:
       volumes:
       - name: beegfs-vol
         hostPath:
-          path: /mnt/beegfs/
+          path: /mnt/storage-nvme

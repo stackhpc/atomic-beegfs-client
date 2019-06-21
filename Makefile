@@ -1,10 +1,11 @@
 BEEGFS_VERSION ?= 7_1
 BEEGFS_KERNEL_VERSION ?= $(shell uname -r)
-BEEGFS_MGMTD_HOST ?= 10.60.253.20 # 20=nvme 50=ssd #40=openhpc
-BEEGFS_HELPER_PORT ?= 8026 # 20=nvme 50=ssd #40=openhpc
-BEEGFS_CLIENT_PORT ?= 8024 # 20=nvme 50=ssd #40=openhpc
+BEEGFS_MGMTD_HOST ?= 10.60.253.20# 20=nvme 50=ssd #40=openhpc
+BEEGFS_HELPER_PORT ?= 8026# 20=nvme 50=ssd #40=openhpc
+BEEGFS_CLIENT_PORT ?= 8024# 20=nvme 50=ssd #40=openhpc
 BEEGFS_MOUNT_PATH ?= /mnt/storage-nvme
 BEEGFS_CLIENT_PREFIX ?= fedora@10.60.253
+BEEGFS_CLIENT_SUFFIX ?= 13 61 19 56
 BEEGFS_CLIENT_SUFFIX ?= 43 63 39 53 31 34 59
 
 define BEEGFS_MANIFEST_K8S
@@ -34,7 +35,7 @@ spec:
         - name: BEEGFS_MGMTD_HOST
           value: ${BEEGFS_MGMTD_HOST}
         volumeMounts:
-        - mountPath: ${BEEGFS_MOUNT_PATH}
+        - mountPath: /mnt/beegfs
           name: beegfs-vol
           mountPropagation: Bidirectional
         securityContext:
