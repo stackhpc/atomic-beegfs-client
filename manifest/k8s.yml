@@ -5,7 +5,7 @@ metadata:
     app: beegfs-ds
     tier: monitor
   name: beegfs-ds
-  namespace: default
+  namespace: kube-system
 spec:
   selector:
     matchLabels:
@@ -17,7 +17,7 @@ spec:
       name: beegfs-pod
     spec:
       containers:
-      - image: docker.io/brtknr/beegfs-client:7_1
+      - image: docker.io/brtknr/beegfs-client:7_1-4.19.3-300.fc29.x86_64
         imagePullPolicy: Always
         name: beegfs-test
         env:

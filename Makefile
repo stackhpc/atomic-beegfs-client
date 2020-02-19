@@ -4,6 +4,7 @@ BEEGFS_MGMTD_HOST ?= 10.60.253.20# 20=nvme 50=ssd #40=openhpc
 BEEGFS_HELPER_PORT ?= 8026# 20=nvme 50=ssd #40=openhpc
 BEEGFS_CLIENT_PORT ?= 8024# 20=nvme 50=ssd #40=openhpc
 BEEGFS_MOUNT_PATH ?= /mnt/storage-nvme
+BEEGFS_CONTAINER_REPO ?= docker.io/stackhpc
 BEEGFS_CLIENT_PREFIX ?= fedora@10.60.253
 BEEGFS_CLIENT_SUFFIX ?= 13 61 19 56
 BEEGFS_CLIENT_SUFFIX ?= 43 63 39 53 31 34 59
@@ -28,7 +29,7 @@ spec:
       name: beegfs-pod
     spec:
       containers:
-      - image: docker.io/brtknr/beegfs-client:${BEEGFS_VERSION}
+      - image: ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION}
         imagePullPolicy: Always
         name: beegfs-test
         env:
@@ -59,7 +60,7 @@ networks:
 services:
   beegfs-ds:
     privileged: true
-    image: docker.io/brtknr/beegfs-client:${BEEGFS_VERSION}
+    image: ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION}
     networks:
       hostnet: {}
     deploy:
@@ -87,10 +88,10 @@ echo:
 build:
 	sudo docker build --build-arg BEEGFS_VERSION=${BEEGFS_VERSION} \
 	--build-arg BEEGFS_KERNEL_VERSION=${BEEGFS_KERNEL_VERSION} \
-	-t brtknr/beegfs-client:${BEEGFS_VERSION} .
+	-t ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION} .
 
 push:
-	sudo docker push brtknr/beegfs-client:${BEEGFS_VERSION}
+	sudo docker push ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION}
 
 dir:
 	for i in ${BEEGFS_CLIENT_SUFFIX}; do ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo mkdir -p ${BEEGFS_MOUNT_PATH}; sudo rm -rf ${BEEGFS_MOUNT_PATH}/*; done
@@ -109,10 +110,10 @@ k8s:
 docker: rmall dir pullall runall 
 
 pullall:
-	for i in ${BEEGFS_CLIENT_SUFFIX}; do (ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo docker pull docker.io/brtknr/beegfs-client:${BEEGFS_VERSION} &) ; done
+	for i in ${BEEGFS_CLIENT_SUFFIX}; do (ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo docker pull ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION} &) ; done
 
 runall:
-	for i in ${BEEGFS_CLIENT_SUFFIX}; do (ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo docker run -d --name beegfs-client-${BEEGFS_MGMTD_HOST} --restart=always --privileged --mount source=${BEEGFS_MOUNT_PATH},target=/mnt/beegfs,type=bind,bind-propagation=rshared -e BEEGFS_MGMTD_HOST=${BEEGFS_MGMTD_HOST} -e BEEGFS_HELPER_PORT=${BEEGFS_HELPER_PORT} -e BEEGFS_CLIENT_PORT=${BEEGFS_CLIENT_PORT} --net=host docker.io/brtknr/beegfs-client:${BEEGFS_VERSION} &); done
+	for i in ${BEEGFS_CLIENT_SUFFIX}; do (ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo docker run -d --name beegfs-client-${BEEGFS_MGMTD_HOST} --restart=always --privileged --mount source=${BEEGFS_MOUNT_PATH},target=/mnt/beegfs,type=bind,bind-propagation=rshared -e BEEGFS_MGMTD_HOST=${BEEGFS_MGMTD_HOST} -e BEEGFS_HELPER_PORT=${BEEGFS_HELPER_PORT} -e BEEGFS_CLIENT_PORT=${BEEGFS_CLIENT_PORT} --net=host ${BEEGFS_CONTAINER_REPO}/beegfs-client:${BEEGFS_VERSION}-${BEEGFS_KERNEL_VERSION} &); done
 
 rmall:
 	for i in ${BEEGFS_CLIENT_SUFFIX}; do (ssh ${BEEGFS_CLIENT_PREFIX}.$${i} sudo docker rm -f beegfs-client-${BEEGFS_MGMTD_HOST} &); done

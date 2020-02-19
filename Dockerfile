@@ -7,7 +7,7 @@ ARG BEEGFS_KERNEL_VERSION
 WORKDIR /tmp
 
 RUN curl -L -o /etc/yum.repos.d/beegfs-rhel7.repo \
-      https://www.beegfs.io/release/beegfs_${BEEGFS_VERSION}/dists/beegfs_rhel7.repo && \
+      https://www.beegfs.io/release/beegfs_${BEEGFS_VERSION}/dists/beegfs-rhel7.repo && \
     dnf install -y \
         beegfs-client beegfs-helperd beegfs-utils libbeegfs-ib iputils \
         libmnl-devel elfutils-libelf-devel findutils binutils boost-atomic boost-chrono \
