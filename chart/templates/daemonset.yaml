@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: beegfs-client
+    release: {{ .Release.Name }}
+  name: beegfs-client
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: beegfs-client
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        name: beegfs-client
+        release: {{ .Release.Name }}
+    spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      containers:
+      - image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: helperd
+        command: ["/helperd.sh"]
+        securityContext:
+          privileged: true
+      {{- range .Values.clients }}
+      - image: {{ $.Values.image.name }}:{{ $.Values.image.tag }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
+        command: ["/client.sh"]
+        name: {{ .name }}
+        env:
+        - name: BEEGFS_CLIENT_NAME
+          value: {{ .name }}
+        - name: BEEGFS_CLIENT_IP
+          value: {{ .address }}
+        - name: BEEGFS_CLIENT_PORT
+          value: {{ .port | quote }}
+        - name: BEEGFS_BUILD_ARGS
+          value: {{ $.Values.buildArgs }}
+        volumeMounts:
+        - mountPath: /mnt/beegfs
+          name: {{ .name }}
+          mountPropagation: Bidirectional
+        securityContext:
+          privileged: true
+      {{- end }}
+      hostNetwork: true
+      volumes:
+      {{- range .Values.clients }}
+      - name: {{ .name }}
+        hostPath:
+          path: {{ .hostPath }}
+      {{- end }}

@@ -2,7 +2,7 @@ FROM fedora:32
 MAINTAINER "Bharat Kunwar" <bharat@stackhpc.com>
 
 ARG BEEGFS_VERSION=7.1.4
-ARG KERNEL_VERSION=5.8.15-201.fc32.x86_64
+ARG KERNEL_VERSION=5.6.14-300.fc32.x86_64
 
 RUN curl -L -o /etc/yum.repos.d/beegfs-rhel7.repo \
       https://www.beegfs.io/release/beegfs_${BEEGFS_VERSION}/dists/beegfs-rhel7.repo && \
