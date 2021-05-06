@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: beegfs
+  name: beegfs-ds
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: beegfs
+  template:
+    metadata:
+      labels:
+        name: beegfs
+    spec:
+      containers:
+      - image: stackhpc/beegfs-client:7_1-centos7
+        imagePullPolicy: Always
+        name: helperd
+        command: ["/helperd.sh"]
+        securityContext:
+          privileged: true
+      - image: stackhpc/beegfs-client:7_1-centos7
+        imagePullPolicy: Always
+        command: ["/client.sh"]
+        name: storage-nvme
+        env:
+        - name: BEEGFS_CLIENT_NAME
+          value: storage-nvme
+        - name: BEEGFS_CLIENT_IP
+          value: 10.60.253.20
+        - name: BEEGFS_CLIENT_PORT
+          value: "8004"
+        - name: BEEGFS_BUILD_ARGS
+          value: -j8 BEEGFS_OPENTK_IBVERBS=1 OFED_INCLUDE_PATH=\/ofed\/include
+        volumeMounts:
+        - mountPath: /mnt/beegfs
+          name: storage-nvme
+          mountPropagation: Bidirectional
+        - mountPath: /ofed
+          name: ofed-path
+        securityContext:
+          privileged: true
+      - image: stackhpc/beegfs-client:7_1-centos7
+        imagePullPolicy: Always
+        command: ["/client.sh"]
+        name: storage-ssd
+        env:
+        - name: BEEGFS_CLIENT_NAME
+          value: storage-ssd
+        - name: BEEGFS_CLIENT_IP
+          value: 10.60.253.50
+        - name: BEEGFS_CLIENT_PORT
+          value: "8104"
+        - name: BEEGFS_BUILD_ARGS
+          value: -j8 BEEGFS_OPENTK_IBVERBS=1 OFED_INCLUDE_PATH=\/ofed\/include
+        volumeMounts:
+        - mountPath: /mnt/beegfs
+          name: storage-ssd
+          mountPropagation: Bidirectional
+        - mountPath: /ofed
+          name: ofed-path
+        securityContext:
+          privileged: true
+      hostNetwork: true
+      volumes:
+      - name: storage-nvme
+        hostPath:
+          path: /mnt/storage-nvme
+      - name: storage-ssd
+        hostPath:
+          path: /mnt/storage-ssd
+      - name: ofed-path
+        hostPath:
+          path: /usr/src/ofa_kernel/default/
